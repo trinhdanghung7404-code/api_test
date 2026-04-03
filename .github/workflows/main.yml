@@ -1,0 +1,22 @@
+name: API Testing
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Run API tests
+        run: |
+          newman run Test.postman_collection.json \
+          -e environment.json \
+          -d data.csv

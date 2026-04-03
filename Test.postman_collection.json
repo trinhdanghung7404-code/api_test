@@ -1,118 +1,88 @@
 {
-	"info": {
-		"name": "API Testing Optimized",
-		"description": "Collection đã sửa lỗi trùng lặp Token giữa các Iteration",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Login",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"// 1. Xóa token cũ để đảm bảo iteration này không dùng ké dữ liệu cũ",
-							"pm.environment.unset(\"token\");"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Login - Status is 200\", function () {",
-							"    // Nếu bạn muốn test cả case login lỗi 401 trong CSV,",
-							"    // hãy đổi 200 thành: parseInt(pm.iterationData.get('expected_login_status'))",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"if (pm.response.code === 200) {",
-							"    let json = pm.response.json();",
-							"    if (json.token) {",
-							"        pm.environment.set(\"token\", json.token);",
-							"        console.log(\"New token set for this iteration\");",
-							"    }",
-							"}"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
-				},
-				"url": {
-					"raw": "{{base_url}}/login",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Profile",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Profile - Check expected status\", function () {",
-							"    let expected = parseInt(pm.iterationData.get(\"expected_status\"));",
-							"    pm.response.to.have.status(expected);",
-							"});",
-							"",
-							"if (pm.response.code === 200) {",
-							"    pm.test(\"Profile - Data is correct\", function () {",
-							"        let json = pm.response.json();",
-							"        pm.expect(json).to.have.property('username');",
-							"    });",
-							"}"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}/profile",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"profile"
-					]
-				}
-			},
-			"response": []
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "https://api-test-adp5.onrender.com"
-		}
-	]
+  "info": {
+    "name": "Test Optimized",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Xóa token cũ trước mỗi iteration để đảm bảo tính độc lập",
+              "pm.environment.unset(\"token\");"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Login status check\", function () {",
+              "    // Lấy giá trị từ cột expected_login_status trong file CSV",
+              "    let expected = parseInt(pm.iterationData.get(\"expected_login_status\"));",
+              "    pm.response.to.have.status(expected);",
+              "});",
+              "",
+              "if (pm.response.code === 200) {",
+              "    let json = pm.response.json();",
+              "    pm.environment.set(\"token\", json.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": "{{base_url}}/login"
+      }
+    },
+    {
+      "name": "Get Profile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Profile status check\", function () {",
+              "    // Lấy giá trị từ cột expected_status trong file CSV",
+              "    let expected = parseInt(pm.iterationData.get(\"expected_status\"));",
+              "    pm.response.to.have.status(expected);",
+              "});",
+              "",
+              "if (pm.response.code === 200) {",
+              "    pm.test(\"Profile data has sub property\", function () {",
+              "        let json = pm.response.json();",
+              "        // Dựa trên log trước đó, API dùng trường 'sub' thay vì 'username'",
+              "        pm.expect(json).to.have.property('sub');",
+              "    });",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/profile"
+      }
+    }
+  ]
 }

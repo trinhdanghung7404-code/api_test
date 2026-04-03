@@ -1,5 +1,5 @@
-username,password,expected_status
-user1,123,200
-admin,admin,200
-user1,wrong,401
-wronguser,123,401
+username,password,expected_login_status,expected_status
+user1,123,200,200
+admin,admin,200,200
+user1,wrong,401,401
+wronguser,123,401,401

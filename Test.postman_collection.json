@@ -47,7 +47,7 @@
           }
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/login",
+          "raw": "https://api-test-adp5.onrender.com/login",
           "protocol": "http",
           "host": [
             "127",
@@ -109,7 +109,7 @@
           "raw": ""
         },
         "url": {
-          "raw": "http://127.0.0.1:8000/profile",
+          "raw": "https://api-test-adp5.onrender.com/profile",
           "protocol": "http",
           "host": [
             "127",

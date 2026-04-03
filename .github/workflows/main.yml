@@ -3,6 +3,8 @@ name: API Testing
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   test-api:
@@ -12,11 +14,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Newman
-        run: npm install -g newman
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Newman and Reporter
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+
+      - name: Wait for API to be ready (Health Check)
+        # Bước này giúp đánh thức server Render tránh lỗi timeout/401 ở iteration đầu
+        run: |
+          curl -s --retry 5 --retry-delay 10 https://api-test-adp5.onrender.com/login > /dev/null
 
       - name: Run API tests
         run: |
           newman run Test.postman_collection.json \
           -e environment.json \
-          -d data.csv
+          -d data.csv \
+          --reporters cli,htmlextra \
+          --reporter-htmlextra-export results/report.html
+
+      - name: Upload Test Report
+        # Luôn chạy bước này kể cả khi test fail để bạn có file report tải về xem
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: results/report.html

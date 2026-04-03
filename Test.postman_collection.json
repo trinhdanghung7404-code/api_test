@@ -46,15 +46,7 @@
             }
           }
         },
-        "url": {
-          "raw": "https://api-test-adp5.onrender.com/login",
-          "protocol": "http",
-          "host": [
-            "127",
-            "0",
-            "0",
-            "1"
-          ],
+        "url": "{{base_url}}/login",
           "port": "8000",
           "path": [
             "login"
@@ -108,15 +100,7 @@
           "mode": "raw",
           "raw": ""
         },
-        "url": {
-          "raw": "https://api-test-adp5.onrender.com/profile",
-          "protocol": "http",
-          "host": [
-            "127",
-            "0",
-            "0",
-            "1"
-          ],
+        "url": "{{base_url}}/login",
           "port": "8000",
           "path": [
             "profile"
